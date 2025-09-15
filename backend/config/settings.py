@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "users",
+    "voting",
 ]
 
 MIDDLEWARE = [
@@ -81,6 +83,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": env.db(),
 }
+
+# Setup custom user model
+AUTH_USER_MODEL = "users.User"
 
 
 # Password validation
