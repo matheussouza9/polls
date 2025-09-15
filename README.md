@@ -35,7 +35,7 @@ This will start the following services:
 To create an admin user, run:
 
 ```bash
-docker exec backend python manage.py createsuperuser
+docker exec -it polls_backend_1 python manage.py createsuperuser
 ```
 
 Or with Podman:
