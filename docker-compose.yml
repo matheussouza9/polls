@@ -24,6 +24,60 @@ services:
     volumes:
       - redis_data:/data
 
+  backend:
+    build: ./backend
+    command: >
+      sh -c "python wait_for_db.py &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DEBUG=True
+      - SECRET_KEY="PLACE_YOUR_SECRET_KEY_HERE"
+      - DATABASE_URL=postgres://polls_user:polls_password@db:5432/polls
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  celery:
+    build: ./backend
+    entrypoint: ['sh', '/app/run_celery.sh']
+    environment:
+      - DEBUG=True
+      - SECRET_KEY="PLACE_YOUR_SECRET_KEY_HERE"
+      - DATABASE_URL=postgres://polls_user:polls_password@db:5432/polls
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    build: ./backend
+    entrypoint: [ 'sh', '/app/run_celery_beat.sh' ]
+    environment:
+      - DEBUG=True
+      - SECRET_KEY="PLACE_YOUR_SECRET_KEY_HERE"
+      - DATABASE_URL=postgres://polls_user:polls_password@db:5432/polls
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: always
+
 volumes:
   postgres_data:
   redis_data:
