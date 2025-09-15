@@ -18,7 +18,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
     def get_queryset(self):
-        return Question.objects.all()
+        return Question.objects.prefetch_related("choices").all()
 
     def get_serializer_class(self):
         if self.action == "create":
