@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17.6
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=polls
+      - POSTGRES_USER=polls_user
+      - POSTGRES_PASSWORD=polls_password
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U polls_user -d polls"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
