@@ -12,3 +12,6 @@ wheels/
 # SQLite database file
 *.sqlite3
 *.db
+
+# Ruff
+.ruff_cache
